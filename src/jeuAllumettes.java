@@ -28,16 +28,28 @@ public class jeuAllumettes {
 
         System.out.println("Bienvenue a Alummettes the Game!");
 
-        while (game) { // menu
+        while (game) {
+            // reset les variables
             allumettes = (int)(Math.random()*80 + 20);
             allumettePasZero = true;
             whileChoix = true;
             compteurDeTours = 0;
+            for (int i=0;i<decisionsPrises1.length;i++) {
+                decisionsPrises1[i] = 0;
+            }
+            for (int i=0;i<decisionsPrises2.length;i++) {
+                decisionsPrises2[i] = 0;
+            }
 
             System.out.println("Est-ce que vous voulez jouer :");
             System.out.println("1 - Contre un ami");
             System.out.println("2 - Contre un robot");
             singlePlayer = sc.nextInt();
+            if (singlePlayer < 1 || singlePlayer > 2) {
+                singlePlayer = 2;
+                System.out.println("Vous allez jouer contre le robot, s'il vous plait, choisissez un nombre valide la prochaine fois.");
+                System.out.println("");
+            }
 
             if (singlePlayer == 1) {
                 System.out.print("Entrez le nom du Joueur Un : ");
@@ -58,46 +70,91 @@ public class jeuAllumettes {
                 }
             }
             if (singlePlayer == 2) {
+                nom2 = "Robot";
                 System.out.print("Entrez votre nom : ");
                 nom1 = sc.next();
                 System.out.println("");
+
+                joueur[0] = nom1;
+                joueur[1] = nom2;
             }
 
             while (allumettePasZero) { // jeu
                 for (int i=0;i<2;i++) {
                     gagnant = i;
                     System.out.println("Il reste " + allumettes + " allummettes.");
-                    System.out.print(joueur[i] + ", combien d'allumettes voulez vous retirer?");
-                    allumettesRetire = sc.nextInt();
-                    // decisions prises
-                    if (joueur[i] == joueur[0]) {
-                        decisionsPrises1[compteurDeTours] = allumettesRetire;
+                    System.out.print(joueur[i] + ", combien d'allumettes voulez vous retirer? ");
+                    // humain
+                    if (singlePlayer == 1 || (singlePlayer == 2 && joueur[i] == joueur[0])) {
+                        allumettesRetire = sc.nextInt();
+                        // decisions prises
+                        if (joueur[i] == joueur[0]) {
+                            decisionsPrises1[compteurDeTours] = allumettesRetire;
+                        }
+                        if (joueur[i] == joueur[1]) {
+                            decisionsPrises2[compteurDeTours] = allumettesRetire;
+                        }
+                        if (allumettesRetire >= 1 && allumettesRetire <= 3) {
+                            System.out.println("");
+                            allumettes = allumettes - allumettesRetire;
+                            if (i==1) {
+                                compteurDeTours++;
+                            }
+                            if (allumettes <= 0) {
+                                if (gagnant == 0) {
+                                    System.out.println(joueur[1] + " a gagne!! Bien joue");
+                                    i++;
+                                    allumettePasZero = false;
+                                    singlePlayer = 1; // sinon ca affiche la victoire 2 fois
+                                }
+                                else {
+                                    System.out.println(joueur[0] + " a gagne!! Bien joue");
+                                    i++;
+                                    allumettePasZero = false;
+                                }
+                            }
+                        }
+                        else i--;
                     }
-                    if (joueur[i] == joueur[1]) {
-                        decisionsPrises2[compteurDeTours] = allumettesRetire;
+                    // robot
+                    if (singlePlayer == 2 && joueur[i] == joueur[1]) {
+                        if (allumettes % 4 == 0) {
+                            allumettesRetire = 3;
+                        }
+                        else if (allumettes % 4 == 3) {
+                            allumettesRetire = 2;
+                        }
+                        else if (allumettes % 4 == 2) {
+                            allumettesRetire = 1;
+                        }
+                        else {
+                            allumettesRetire = 1 + (int)(Math.random() * 3);
+                        }
+                        if (joueur[i] == joueur[1]) {
+                            decisionsPrises2[compteurDeTours] = allumettesRetire;
+                        }
+                        if (allumettesRetire >= 1 && allumettesRetire <= 3) {
+                            System.out.println("");
+                            allumettes = allumettes - allumettesRetire;
+                            if (i==1) {
+                                compteurDeTours++;
+                            }
+                            if (allumettes <= 0) {
+                                if (gagnant == 0) {
+                                    System.out.println(joueur[1] + " a gagne!! Bien joue");
+                                    i++;
+                                    allumettePasZero = false;
+                                }
+                                else {
+                                    System.out.println(joueur[0] + " a gagne!! Bien joue");
+                                    i++;
+                                    allumettePasZero = false;
+                                }
+                            }
+                        }
+                        else i--;
                     }
-
                     // si le nombres d'allumettes qu'un joueur prend et plus grand que 3 ou plus petit que 1 le boucle recommence
-                    if (allumettesRetire >= 1 && allumettesRetire <= 3) {
-                        System.out.println("");
-                        allumettes = allumettes - allumettesRetire;
-                        if (i==1) {
-                            compteurDeTours++;
-                        }
-                        if (allumettes <= 0) {
-                            if (gagnant == 0) {
-                                System.out.println(joueur[1] + " a gagne!! Bien joue");
-                                i++;
-                                allumettePasZero = false;
-                            }
-                            else {
-                                System.out.println(joueur[0] + " a gagne!! Bien joue");
-                                i++;
-                                allumettePasZero = false;
-                            }
-                        }
-                    }
-                    else i--;
                 }
             }
 
